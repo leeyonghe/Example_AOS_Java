@@ -14,13 +14,13 @@ Loading 중일 때 Loading 을 나타낼 수 있는 Indicator (Progress) 를 노
 - 제한 사항<br>
 사용 언어 : Java<br>
 사용 필수 라이브러리 : OkHttp3 / Retrofit2 / Jackson 혹은 Gson / Glide4<br>
-MVP 혹은 MVVM 사용<br>
-- 추가 구현 목표<br><br>
+MVP 혹은 MVVM 사용<br><br>
+- 추가 구현 목표<br>
 Kotlin 사용<br>
 Clean Architecture 사용<br>
 Android Architecture 및 Android Data Binding 사용<br>
 Rx2 사용<br>
-Dagger2 사용<br>
+Dagger2 사용<br><br>
 - 스크린샷 <br>
 <table>
   <tr>  
