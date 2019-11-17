@@ -39,10 +39,10 @@ Dagger2 사용<br><br>
         <span>초기화면</span>
       </td>
     <td>
-       <span>메인 검색 화면</span>
+       <span>리스트 화면 검색 결과</span>
       </td>
     <td>
-        <span>검색 결과</span>
+        <span>collection 화면 검색 결과</span>
       </td>
   </tr>
 </table>
