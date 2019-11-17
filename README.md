@@ -31,7 +31,7 @@ Dagger2 사용<br><br>
         <img src="./ScreenShot/IMG_0125.jpg" width="100%">
       </td>
     <td>
-        <img src="./ScreenShot/IMG_0126.jpg" width="100%">
+        <img src="./ScreenShot/IMG_0128.jpg" width="100%">
       </td>
   </tr>
   <tr>  
@@ -49,10 +49,10 @@ Dagger2 사용<br><br>
 <table>
   <tr>  
       <td>
-        <img src="./ScreenShot/IMG_0127.jpg" width="100%">
+        <img src="./ScreenShot/IMG_0126.jpg" width="100%">
       </td>
     <td>
-        <img src="./ScreenShot/IMG_0128.jpg" width="100%">
+        <img src="./ScreenShot/IMG_0127.jpg" width="100%">
       </td>
     <td>
         <img src="./ScreenShot/IMG_0129.jpg" width="100%">
