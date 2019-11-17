@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# ST_Unitas_iOS <br> <br>
+# ST_Unitas_AOS_Java <br> <br>
 - 필수 구현 목표 <br>
 필수 구현 목표와 제한 사항은 반드시 지켜야 하며, 그 외는 자유롭게 구현이 가능합니다. <br>
 사용자가 검색어를 입력하고 이미지 검색 결과를 화면에 표시하는 어플리케이션을 만들어야 합니다. <br>
@@ -70,6 +69,3 @@ UITableView/UICollectionView prefetching 사용 <br> <br>
       </td>
   </tr>
 </table>
-=======
-# ST_Unitas_AOS_Java
->>>>>>> 57b5db283f996bad93f7c4c2f6766d18079d9a6e
