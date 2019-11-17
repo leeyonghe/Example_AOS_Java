@@ -20,18 +20,24 @@
             android:id="@+id/collection"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:textSize="11dp"
+            android:gravity="left|center_vertical"
             android:layout_weight="1"></TextView>
 
         <TextView
             android:id="@+id/display_sitename"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:textSize="11dp"
+            android:gravity="left|center_vertical"
             android:layout_weight="1"></TextView>
 
         <TextView
             android:id="@+id/datetime"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:textSize="11dp"
+            android:gravity="left|center_vertical"
             android:layout_weight="1"></TextView>
 
 

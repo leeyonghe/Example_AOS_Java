@@ -22,12 +22,10 @@ public class APIClient {
           @Override
           public Response intercept(Interceptor.Chain chain) throws IOException {
               Request original = chain.request();
-
               Request request = original.newBuilder()
                       .header("Authorization", "KakaoAK 77a9306101b5e16ed249a11a6d2a2b39")
                       .method(original.method(), original.body())
                       .build();
-
               return chain.proceed(request);
             }
         });
@@ -40,6 +38,7 @@ public class APIClient {
                 .build();
 
         return retrofit;
+
     }
 
 

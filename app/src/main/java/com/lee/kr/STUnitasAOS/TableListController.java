@@ -1,9 +1,11 @@
 package com.lee.kr.STUnitasAOS;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -23,14 +26,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 
+import java.net.URI;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TableListController extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnClickListener, AbsListView.OnScrollListener {
+public class TableListController extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnClickListener, AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
 
     private ListView list;
     private GridView grid;
+    private TextView empty;
     private APIInterface apiInterface;
     private ApiHandler handler;
     private ApiHandler handler2;
@@ -38,6 +44,7 @@ public class TableListController extends AppCompatActivity implements SearchView
     private Adapter adapter;
     private AdapterGrid adapterGrid;
     private int page = 1;
+    private boolean isEmpty = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +52,8 @@ public class TableListController extends AppCompatActivity implements SearchView
         setContentView(R.layout.tablelist_layout);
 
         findViewById(R.id.select).setOnClickListener(this);
+
+        empty = findViewById(R.id.empty);
 
         list = findViewById(R.id.list);
 
@@ -56,11 +65,15 @@ public class TableListController extends AppCompatActivity implements SearchView
 
         list.setAdapter(adapter);
 
+        list.setOnItemClickListener(this);
+
         grid = findViewById(R.id.grid);
 
         grid.setOnScrollListener(this);
 
         grid.setAdapter(adapterGrid);
+
+        grid.setOnItemClickListener(this);
 
         searchView = findViewById(R.id.search);
 
@@ -95,6 +108,8 @@ public class TableListController extends AppCompatActivity implements SearchView
 
                             }break;
                         }
+
+
                     }
 
                     @Override
@@ -113,6 +128,13 @@ public class TableListController extends AppCompatActivity implements SearchView
             @Override
             public boolean handleMessage(@NonNull Message message) {
 
+                final ProgressDialog progressDoalog;
+                progressDoalog = new ProgressDialog(TableListController.this);
+                progressDoalog.setMax(100);
+                progressDoalog.setMessage("로딩중...");
+                progressDoalog.setTitle("알림");
+                progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
                 Call<SearchList> call2 = apiInterface.getSearchList((String) message.obj, Integer.toString(page));
                 call2.enqueue(new Callback<SearchList>() {
                     @Override
@@ -121,8 +143,8 @@ public class TableListController extends AppCompatActivity implements SearchView
                         switch (handler.handlerType){
                             case DOUBLE:{
 
-                                adapter.setSearchList(response.body());
-                                adapterGrid.setSearchList(response.body());
+                                adapter.setSearchList2(response.body());
+                                adapterGrid.setSearchList2(response.body());
 
                             }break;
                             case LIST:{
@@ -136,12 +158,16 @@ public class TableListController extends AppCompatActivity implements SearchView
 
                             }break;
                         }
+
+                        progressDoalog.dismiss();
                     }
 
                     @Override
                     public void onFailure(Call<SearchList> call, Throwable t) {
                         Log.i("TAG", ">>>>>>>>>>>>>> : "+t.getMessage());
                         call.cancel();
+
+                        progressDoalog.dismiss();
                     }
 
                 });
@@ -167,11 +193,30 @@ public class TableListController extends AppCompatActivity implements SearchView
     public boolean onQueryTextChange(String s) {
         Log.i("TAG", ">>>>>>>>>>>>>> "+s);
         if (!s.isEmpty()){
+            isEmpty = false;
             Message msg = Message.obtain();
             msg.obj = new String(s);
             handler.sendMessage(msg);
+            empty.setVisibility(View.GONE);
+            switch (handler.handlerType){
+                case LIST:{
+
+                    list.setVisibility(View.VISIBLE);
+                    grid.setVisibility(View.GONE);
+
+                }break;
+                case COLLECTION:{
+
+                    list.setVisibility(View.GONE);
+                    grid.setVisibility(View.VISIBLE);
+
+                }break;
+            }
         }else{
+            empty.setVisibility(View.VISIBLE);
+            isEmpty = true;
             adapter.cleanAll();
+            adapterGrid.cleanAll();
         }
         return false;
     }
@@ -185,6 +230,7 @@ public class TableListController extends AppCompatActivity implements SearchView
             this.list.setVisibility(View.VISIBLE);
             this.grid.setVisibility(View.GONE);
             handler.handlerType = HandlerType.LIST;
+            handler2.handlerType = HandlerType.LIST;
             page = 1;
             Message msg = Message.obtain();
             msg.obj = new String(searchView.getQuery().toString());
@@ -195,6 +241,7 @@ public class TableListController extends AppCompatActivity implements SearchView
             this.list.setVisibility(View.GONE);
             this.grid.setVisibility(View.VISIBLE);
             handler.handlerType = HandlerType.COLLECTION;
+            handler2.handlerType = HandlerType.COLLECTION;
             page = 1;
             Message msg = Message.obtain();
             msg.obj = new String(searchView.getQuery().toString());
@@ -212,13 +259,12 @@ public class TableListController extends AppCompatActivity implements SearchView
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-        if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && (listView.getLastVisiblePosition()) >= (adapter.getCount() - 1)) {
+        if (isEmpty == false && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && (listView.getLastVisiblePosition()) >= (adapter.getCount() - 1)) {
             Log.i("TAG", ">>>>>>>>>>>>>>>>>>> botom");
             page++;
             Message msg = Message.obtain();
             msg.obj = new String(searchView.getQuery().toString());
             handler2.sendMessage(msg);
-
         }
 
     }
@@ -226,6 +272,29 @@ public class TableListController extends AppCompatActivity implements SearchView
     @Override
     public void onScroll(AbsListView absListView, int i, int i1, int i2) {
 
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view1 = getCurrentFocus();
+        if (view1 == null) {
+            view1 = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view1.getWindowToken(), 0);
+
+        if (adapterView.getAdapter() instanceof Adapter){
+            String doc_url = ((Documents)((Adapter)adapterView.getAdapter()).getItem(i)).doc_url;
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(doc_url));
+            startActivity(intent);
+        }else if (adapterView.getAdapter() instanceof AdapterGrid){
+            String doc_url = ((Documents)((AdapterGrid)adapterView.getAdapter()).getItem(i)).doc_url;
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(doc_url));
+            startActivity(intent);
+        }
     }
 
     public class Adapter extends BaseAdapter{
@@ -262,6 +331,17 @@ public class TableListController extends AppCompatActivity implements SearchView
             }
 
             ImageView thumbnail_url = view.findViewById(R.id.thumbnail_url);
+            thumbnail_url.setTag(getItem(i));
+            thumbnail_url.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String image_url = ((Documents)view.getTag()).image_url;
+                    Intent intent = new Intent(context, ShowImageController.class);
+                    intent.putExtra("image_url" , image_url);
+                    startActivity(intent);
+                }
+            });
+
             TextView collection = view.findViewById(R.id.collection);
             collection.setText("구분 : "+searchList.documents.get(i).collection);
             TextView display_sitename = view.findViewById(R.id.display_sitename);
@@ -330,6 +410,17 @@ public class TableListController extends AppCompatActivity implements SearchView
             }
 
             ImageView thumbnail_url = view.findViewById(R.id.thumbnail_url);
+            thumbnail_url.setTag(getItem(i));
+            thumbnail_url.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String image_url = ((Documents)view.getTag()).image_url;
+                    Intent intent = new Intent(context, ShowImageController.class);
+                    intent.putExtra("image_url" , image_url);
+                    startActivity(intent);
+                }
+            });
+
             TextView collection = view.findViewById(R.id.collection);
             collection.setText("구분 : "+searchList.documents.get(i).collection);
             TextView display_sitename = view.findViewById(R.id.display_sitename);
