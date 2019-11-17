@@ -19,8 +19,10 @@
         </SearchView>
 
         <Button
+            android:id="@+id/select"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:tag="0"
             android:background="@drawable/list_icon">
         </Button>
 
